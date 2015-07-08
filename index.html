@@ -56,7 +56,7 @@
 			$scope.startClock = function() {
 				$scope.intervalPromise = $interval(function() {
 					$scope.elapsedTime += 1;
-					$scope.clockTime = moment($scope.startDate).add($scope.ratio * $scope.elapsedTime, 's');
+					$scope.clockTime = moment($scope.startDate).add($scope.ratio * $scope.elapsedTime, 's').format("dddd, MMMM Do YYYY, HH:mm:ss");
 				}, 1000)
 			}
 			
