@@ -1,3 +1,69 @@
-<html>
-	<h1>Hello World</h1>
+<!DOCTYPE html>
+<html ng-app="simClock" lang="en">
+	<head>
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+		
+		<link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css">
+		<link rel="stylesheet" href="bower_components/angular-bootstrap-datetimepicker/src/css/datetimepicker.css"/>
+		
+		<script type="text/javascript" src="bower_components/jquery/dist/jquery.js"></script>
+		<script type="text/javascript" src="bower_components/moment/moment.js"></script>
+		<script type="text/javascript" src="bower_components/bootstrap/dist/js/bootstrap.js"></script>
+		<script type="text/javascript" src="bower_components/angular/angular.js"></script>
+		<script type="text/javascript" src="bower_components/angular-bootstrap-datetimepicker/src/js/datetimepicker.js"></script>
+	</head>
+		
+	<body ng-controller="simClockController">
+		<div class="container">
+			<h1>Simulation Clock</h1>
+			
+			<div ng-hide="intervalPromise">
+				<div>
+					<label>Starting Time:</label> <span ng-bind="startDate"></span>
+					<datetimepicker ng-model="startDate" ng-hide="startDate"></datetimepicker>
+					<button ng-click="clearDate()" ng-show="startDate" class="btn btn-danger">Clear</button>
+				</div>
+				
+				<div>
+					<label>1 Second real world becomes</label>
+						<input type="number" ng-model="ratio" /> seconds in simulation
+				</div>
+			</div>
+			
+			<button class="btn btn-success" ng-click="startClock()" ng-show="isReadyToStart()">Start The Clock</button>
+			
+			<h1 ng-bind="clockTime" ng-show="intervalPromise"></h1>
+		</div>
+	</body>
+	
+	<script type="text/javascript">
+		var myApp = angular.module('simClock', ['ui.bootstrap.datetimepicker']);
+		myApp.controller('simClockController', ['$scope', '$interval', function($scope, $interval) {
+			
+			$scope.startDate = null;
+			$scope.ratio = null;
+			$scope.intervalPromise = null;
+			$scope.elapsedTime = 0;
+			
+			$scope.isReadyToStart = function() {
+				return ($scope.intervalPromise == null) && ($scope.startDate != null) && ($scope.ratio != null);
+			}
+			
+			$scope.clearDate = function() {
+			  $scope.startDate = null;
+			}
+			
+			$scope.startClock = function() {
+				$scope.intervalPromise = $interval(function() {
+					$scope.elapsedTime += 1;
+					$scope.clockTime = moment($scope.startDate).add($scope.ratio * $scope.elapsedTime, 's');
+				}, 1000)
+			}
+			
+			$scope.pauseClock = function() {
+				$interval.cancel($scope.intervalPromise);
+				$scope.intervalPromise = null;
+			}
+		}]);
+	</script>
 </html>
